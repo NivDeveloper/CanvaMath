@@ -1,4 +1,7 @@
 #include "Window.h"
+#include "stb_image.h"
+#include "SDL3_image/SDL_image.h"
+
 #include <iostream>
 #include <stdexcept>
 
@@ -43,6 +46,10 @@ Window::Window(const std::string & title, int width, int height)
     SDL_GL_SetSwapInterval(0);
 
     glViewport(0,0,width, height);
+
+    SDL_Surface* icon = IMG_Load("../res/icons/icon.png");
+    SDL_SetWindowIcon(m_window, icon);
+    SDL_DestroySurface(icon);
 
 }
 

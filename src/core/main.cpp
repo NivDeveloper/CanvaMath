@@ -1,7 +1,6 @@
 #include "SDL.h"
 #include "Window.h"
 #include "glm/glm.hpp"
-#include "stb_image.h"
 
 #include <iostream>
 
