@@ -1,5 +1,7 @@
 #include "SDL.h"
 #include "Window.h"
+#include "glm/glm.hpp"
+#include "stb_image.h"
 
 #include <iostream>
 
@@ -17,16 +19,16 @@ int main() {
     try{
     Window window("CanvaMath", width, height);
 
-
+    
     bool running = true;
 
     // ! ###############
-    while (running) {
-        SDL_Event event;
+    while (!window.ShouldClose()) {
+        window.PollEvents();
+        glClearColor(0.0f, 0.4f, 0.8f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
 
-        while (SDL_PollEvent(&event))
-            if (event.type == SDL_EventType::SDL_EVENT_QUIT)
-                running = false;
+        window.SwapBuffers();
 
 
     }
