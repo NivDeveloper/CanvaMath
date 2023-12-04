@@ -50,17 +50,54 @@ Window::Window(const std::string & title, int width, int height)
     SDL_Surface* icon = IMG_Load("../res/icons/icon.png");
     SDL_SetWindowIcon(m_window, icon);
     SDL_DestroySurface(icon);
-
+    KeyStates = SDL_GetKeyboardState(nullptr);
 }
 
 void Window::SwapBuffers() {
     SDL_GL_SwapWindow(m_window);
 }
 
+void Window::AddListener(IEventListener* listener) {
+    listener->KeyStates = KeyStates;
+    m_listeners.push_back(listener);
+}
+
+void Window::ProcessEvents() {
+    for (auto l: m_listeners) {
+        l->ProcessInput();
+    }
+}
+
 void Window::PollEvents() {
     SDL_Event event;
 
-        while (SDL_PollEvent(&event))
-            if (event.type == SDL_EventType::SDL_EVENT_QUIT)
+    while (SDL_PollEvent(&event)){
+        switch(event.type) {
+            case SDL_EVENT_QUIT:
                 m_ShouldClose = true;
+                break;
+            case SDL_EVENT_MOUSE_MOTION:
+                for (auto l: m_listeners) {
+                    l->CursorPoscallback(event.motion.x, event.motion.y);
+                }
+                break;
+            case SDL_EVENT_KEY_DOWN:
+                // std::cout << SDL_GetScancodeName(event.key.keysym.scancode) << std::endl;
+                break;
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+            case SDL_EVENT_MOUSE_BUTTON_UP:
+                for (auto l: m_listeners) {
+                    SDL_GetMouseState(&l->CursPosX, &l->CursPosY);
+                    int enable = l->MouseButtoncallback(event.button.button, event.button.state);
+                    if (enable == 1) {
+                        SDL_SetRelativeMouseMode(SDL_FALSE);
+                    }
+                    else if (enable == -1) {
+                        SDL_SetRelativeMouseMode(SDL_TRUE);
+                    }
+                }
+            default:
+                break;
+        }
+    }
 }
