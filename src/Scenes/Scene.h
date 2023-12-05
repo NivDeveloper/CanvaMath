@@ -9,9 +9,9 @@
 
 #include "imgui.h"
 
-// #include "Texture.h"
+#include "Texture.h"
 #include "Shapes.h"
-// #include "Material.h"
+#include "Material.h"
 
 namespace scenes {
 	class Scene
@@ -25,7 +25,7 @@ namespace scenes {
 		int m_scrW = 1200;
 		int m_scrH = 900;
 
-		std::vector<shapes::Shape*> sceneshapes;
+		std::vector<shapes::Shape*> m_sceneshapes;
 		std::vector<float> m_ClearColor;
 	};
 

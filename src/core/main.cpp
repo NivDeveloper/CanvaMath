@@ -3,6 +3,7 @@
 #include "Scene1.h"
 #include "Scene.h"
 #include "Renderer.h"
+#include "DebugGL.h"
 
 #include "UI.h"
 
@@ -16,23 +17,24 @@ int main() {
     try{Window::Init();}
     catch(std::exception &exception){return -1;}
 
-    try{
+    try{Window window("CanvaMath", width, height);
 
-
-    Window window("CanvaMath", width, height);
     Camera2D cam;
     window.AddListener(&cam);
     Renderer renderer;
     UI ui(&window);
+    EnableDebugOutput();
 
 
     // * ---------------------------------
     scenes::Scene* currentscene = nullptr;
     scenes::SceneMenu* menu = new scenes::SceneMenu(currentscene);
     currentscene = menu;
-
     menu->AddScene<scenes::Scene1>("Scene1!");
     renderer.Submit(currentscene, cam);
+    renderer.setClearColor(0.1f, 0.2f, 0.9f, 1.0f);
+    // * ---------------------------------
+
     // ! ###############
     while (!window.ShouldClose()) {
         window.PollEvents();

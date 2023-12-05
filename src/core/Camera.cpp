@@ -10,6 +10,7 @@ Camera2D::Camera2D(glm::vec3 position, glm::vec3 front) {
     m_front = glm::vec3(0.0f, 0.0f, -1.0f);
     m_speed = 0.004f;
     m_sensitivity = 0.01f;
+    m_projZoom = glm::mat4(1.0f);
     m_zoom = 1.0f;
     m_scroll = 0.0f;
     m_offset = glm::vec3(0.0f, 0.0f, 0.0f);
@@ -66,8 +67,10 @@ void Camera2D::CursorPoscallback(double xpos, double ypos) {
     xoffset /= m_zoom;
     yoffset /= m_zoom;
 
+    // std::cout << m_position[0] - xoffset << " "  << m_position[1] - yoffset << std::endl;
     m_position[0] -= xoffset;
     m_position[1] -= yoffset;
+
 }
 
 float Camera2D::GetZoom() const{
@@ -82,7 +85,6 @@ glm::mat4* Camera2D::GetViewMatrix() {
 glm::mat4* Camera2D::GetProjectionMatrix() {
     m_proj = glm::ortho(-m_aspect, m_aspect, -1.0f, 1.0f, 0.1f, 100.0f) * m_projZoom;
     return &m_proj;
-
 }
 
 void Camera2D::Scrollcallback(double xoffset, double yoffset) {

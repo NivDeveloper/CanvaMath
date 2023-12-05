@@ -105,6 +105,12 @@ void Window::PollEvents() {
                     }
                 }
                 break;
+            case SDL_EVENT_MOUSE_WHEEL:
+                for (auto l: m_listeners) {
+                    SDL_GetMouseState(&l->CursPosX, &l->CursPosY);
+                    l->Scrollcallback(event.wheel.x, event.wheel.y);
+                }
+                break;
                 
             default:
                 break;
