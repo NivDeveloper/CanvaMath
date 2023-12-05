@@ -1,9 +1,11 @@
-#include "SDL.h"
 #include "Window.h"
 #include "Camera.h"
+#include "Scene1.h"
+#include "Scene.h"
+#include "Renderer.h"
 
+#include "UI.h"
 
-#include "glm/glm.hpp"
 
 #include <iostream>
 
@@ -20,22 +22,51 @@ int main() {
     Window window("CanvaMath", width, height);
     Camera2D cam;
     window.AddListener(&cam);
-    
+    Renderer renderer;
+    UI ui(&window);
+
+
+    // * ---------------------------------
+    scenes::Scene* currentscene = nullptr;
+    scenes::SceneMenu* menu = new scenes::SceneMenu(currentscene);
+    currentscene = menu;
+
+    menu->AddScene<scenes::Scene1>("Scene1!");
+    renderer.Submit(currentscene, cam);
     // ! ###############
     while (!window.ShouldClose()) {
         window.PollEvents();
         window.ProcessEvents();
-        glClearColor(0.0f, 0.4f, 0.8f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
+        renderer.Clear();
+        ui.NewFrame();
 
+        // ! IMGUI ----------------------
+        if (currentscene) {
+            currentscene->OnUpdate(0.1f);
+            ImGui::Begin("CanvaMath");
+            if (currentscene != menu && ImGui::Button("<-")) {
+                delete currentscene;
+                currentscene = menu;
+                renderer.Submit(menu, cam);
+            }
+            if (currentscene->OnUIRender()) {
+                renderer.Submit(currentscene, cam);
+            }
+            ImGui::End();
+            
+        }
+        // ! ----------------------------
+        
+        renderer.Render(cam);
+        ui.Render();
         window.SwapBuffers();
     }
     // ! ###############
 
-    }
-    catch(std::exception &exception){
-        std::cout << exception.what() << std::endl;
-    }
+
+    ui.Destroy();
+
+    }catch(std::exception &exception){std::cout << exception.what() << std::endl;}
    
 
 

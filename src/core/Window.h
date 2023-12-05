@@ -27,6 +27,7 @@ private:
     SDL_GLContext m_glcontext;
     inline static std::vector<IEventListener*> m_listeners;
     const Uint8* KeyStates;
+    static bool* m_uibool;
 public:
     static void Init();
     static void Quit();
@@ -37,4 +38,7 @@ public:
     void PollEvents();
     bool ShouldClose() { return m_ShouldClose;}
     void ProcessEvents();
+    void SetUIBool(bool* uibool);
+    SDL_Window* GetWindow() {return m_window;}
+    SDL_GLContext GetGLContext(){return &m_glcontext;}
 };

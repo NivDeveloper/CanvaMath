@@ -1,10 +1,12 @@
 #include "Window.h"
 #include "stb_image.h"
 #include "SDL3_image/SDL_image.h"
+#include "imgui_impl_sdl3.h"
 
 #include <iostream>
 #include <stdexcept>
 
+bool* Window::m_uibool;
 
 void Window::Init() {
     if(SDL_Init(SDL_InitFlags::SDL_INIT_VIDEO)) {
@@ -57,6 +59,11 @@ void Window::SwapBuffers() {
     SDL_GL_SwapWindow(m_window);
 }
 
+void Window::SetUIBool(bool* uibool) {
+    Window::m_uibool = uibool;
+    // TODO disable click when mouse in scene and under UI
+}
+
 void Window::AddListener(IEventListener* listener) {
     listener->KeyStates = KeyStates;
     m_listeners.push_back(listener);
@@ -70,8 +77,8 @@ void Window::ProcessEvents() {
 
 void Window::PollEvents() {
     SDL_Event event;
-
     while (SDL_PollEvent(&event)){
+        ImGui_ImplSDL3_ProcessEvent(&event);
         switch(event.type) {
             case SDL_EVENT_QUIT:
                 m_ShouldClose = true;
@@ -82,10 +89,11 @@ void Window::PollEvents() {
                 }
                 break;
             case SDL_EVENT_KEY_DOWN:
-                // std::cout << SDL_GetScancodeName(event.key.keysym.scancode) << std::endl;
                 break;
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
             case SDL_EVENT_MOUSE_BUTTON_UP:
+                if (*m_uibool)
+                    break;
                 for (auto l: m_listeners) {
                     SDL_GetMouseState(&l->CursPosX, &l->CursPosY);
                     int enable = l->MouseButtoncallback(event.button.button, event.button.state);
@@ -96,6 +104,8 @@ void Window::PollEvents() {
                         SDL_SetRelativeMouseMode(SDL_TRUE);
                     }
                 }
+                break;
+                
             default:
                 break;
         }
