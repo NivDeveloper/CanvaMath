@@ -4,11 +4,13 @@
 #include "Scene.h"
 #include "Renderer.h"
 #include "DebugGL.h"
+#include "Debug.h"
 
 #include "UI.h"
 
 
 #include <iostream>
+#include <chrono>
 
 int width = 1200;
 int height = 900;
@@ -23,6 +25,11 @@ int main() {
     window.AddListener(&cam);
     Renderer renderer;
     UI ui(&window);
+    std::chrono::high_resolution_clock clock;
+    auto begin = clock.now();
+    auto end = clock.now();
+    std::chrono::duration<float> frameTime = end - begin;
+    int fcounter = 0;
     EnableDebugOutput();
 
 
@@ -34,18 +41,30 @@ int main() {
     renderer.Submit(currentscene, cam);
     renderer.setClearColor(0.1f, 0.2f, 0.9f, 1.0f);
     // * ---------------------------------
-
     // ! ###############
     while (!window.ShouldClose()) {
+
+        // * Frame Time calculation--------
+        end = clock.now();
+        if (fcounter > 500) {
+            frameTime = end-begin;
+            fcounter = 0;
+        }
+        else{ fcounter++; }
+        begin = clock.now();
+        // * ------------------------------
+
         window.PollEvents();
         window.ProcessEvents();
         renderer.Clear();
         ui.NewFrame();
 
         // ! IMGUI ----------------------
+        ImGui::Begin("CanvaMath");
+        ImGui::Text("Frame Time :%f", frameTime.count());
+        ImGui::Text("FPS: %f", 1.0f/frameTime.count());
         if (currentscene) {
             currentscene->OnUpdate(0.1f);
-            ImGui::Begin("CanvaMath");
             if (currentscene != menu && ImGui::Button("<-")) {
                 delete currentscene;
                 currentscene = menu;
@@ -54,9 +73,9 @@ int main() {
             if (currentscene->OnUIRender()) {
                 renderer.Submit(currentscene, cam);
             }
-            ImGui::End();
             
         }
+        ImGui::End();
         // ! ----------------------------
         
         renderer.Render(cam);

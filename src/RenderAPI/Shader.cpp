@@ -141,3 +141,72 @@ void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix)
 {
     glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
 }
+
+CompShader::CompShader(const std::string& path, unsigned int x, unsigned int y, unsigned int z)
+    :m_X{x}, m_Y{y}, m_Z{z}
+{
+    // Parse Shaders------
+    std::ifstream compfile;
+
+    compfile.open(path.c_str());
+
+    if(!compfile.is_open()) std::cout << "failed to open " << path << std::endl;
+
+    std::stringstream compstream;
+
+    compstream << compfile.rdbuf();
+
+    m_CompSource = compstream.str();
+
+    compfile.close();
+}
+
+void CompShader::Compile() {
+    const char* compsource = m_CompSource.c_str();
+
+    m_ID = glCreateProgram();
+    unsigned int cmp = glCreateShader(GL_COMPUTE_SHADER);
+
+    glShaderSource(cmp, 1, &compsource, nullptr);
+
+    glCompileShader(cmp);
+    
+    // ------------------------------------
+
+    // Error handling-----
+    int resultv;
+    glGetShaderiv(cmp, GL_COMPILE_STATUS, &resultv);
+    if (resultv == GL_FALSE)
+    {
+        int length;
+        glGetShaderiv(cmp, GL_INFO_LOG_LENGTH, &length);
+        char* message = (char*)alloca(length * sizeof(char));
+        glGetShaderInfoLog(cmp, length, &length, message);
+
+        std::cout << "Failed to compile compute shader" << std::endl;
+        std::cout << message << std::endl;
+
+        glDeleteShader(cmp);
+    }
+
+    glAttachShader(m_ID, cmp);
+    //read docs
+    glLinkProgram(m_ID);
+    glValidateProgram(m_ID);
+
+    glDeleteShader(cmp);
+}
+
+void CompShader::Bind() {
+    glUseProgram(m_ID);
+}
+void CompShader::Unbind() {
+    glUseProgram(0);
+}
+
+void CompShader::Execute() {
+    Bind();
+    glDispatchCompute(m_X, m_Y, m_Z);
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+    Unbind();
+}

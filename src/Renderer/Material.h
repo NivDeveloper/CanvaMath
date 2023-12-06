@@ -88,15 +88,20 @@ class Material {
 private:
     MaterialType m_type;
     Shader* m_shader;
+    CompShader* m_comp;
     std::vector<std::shared_ptr<DirLight>> Dlights;
     std::vector<std::shared_ptr<PointLight>> Plights;
     std::shared_ptr<UniformBuffer> m_buffer;
+    Texture* m_compTexture;
     void SetUniforms();
 public:
     Material();
     Material(MaterialType mattype);
     void SetShader(const std::string& vspath, const std::string& fspath);
+    void SetCompShader(const std::string& path, unsigned int x, unsigned int y, unsigned int z);
+    void Execute();
     void SetModelMat(const glm::mat4& model);
+    void SetCompTex(const int width, const int height);
     void AddLight(std::shared_ptr<DirLight> dlight);
     void AddLight(std::shared_ptr<PointLight> plight);
     void SetBuffer(std::shared_ptr<UniformBuffer> buff);

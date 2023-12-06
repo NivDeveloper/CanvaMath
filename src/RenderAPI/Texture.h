@@ -23,7 +23,7 @@ public:
 	void Unbind() const;
 	void Compile();
 
-	unsigned int id;
+	// unsigned int id;
 	inline int GetWidth() const { return m_Width; }
 	inline int GetHeight() const { return m_Height; }
 };

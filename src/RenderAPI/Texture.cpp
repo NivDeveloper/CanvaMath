@@ -9,17 +9,19 @@ Texture::Texture(const int wid, const int height)
 {
 	/*Creates the stated number of Textures*/
 	glGenTextures(1, &m_RendererID);
-	glBindTexture(GL_TEXTURE_2D, m_RendererID);
-	id = m_RendererID;
+	// glBindTexture(GL_TEXTURE_2D, m_RendererID);
+	Bind(0);
+	// id = m_RendererID;
 	/*sets the stated parameter of the given texture to the given parameter*/
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, m_Width, m_Height, 0, GL_RGBA, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA32F, wid, height, 0, GL_RGBA, 
+             GL_FLOAT, NULL);
 	// glGenerateMipmap(GL_TEXTURE_2D);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindImageTexture(0, m_RendererID, 0, GL_FALSE, 0, GL_READ_ONLY, GL_RGBA32F);
 }
 
 Texture::Texture(const std::string& path)
@@ -45,7 +47,7 @@ void Texture::Compile(){
 	/*Creates the stated number of Textures*/
 	glGenTextures(1, &m_RendererID);
 	glBindTexture(GL_TEXTURE_2D, m_RendererID);
-	id = m_RendererID;
+	// id = m_RendererID;
 
 	/*sets the stated parameter of the given texture to the given parameter*/
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);

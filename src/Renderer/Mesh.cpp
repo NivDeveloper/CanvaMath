@@ -35,7 +35,6 @@ void Mesh::Draw() {
     m_vao.Bind();
     m_vbo.Bind();
     m_Material->Bind();
-    
     if (m_Indices.size() == 0) {
         glDrawArrays(GL_TRIANGLES, 0, m_Vertices.size());
     }
@@ -45,6 +44,7 @@ void Mesh::Draw() {
         m_ebo.Unbind();
     }
     m_Material->Unbind();
+    m_Material->Execute();
     m_vbo.Unbind();
     m_vao.Unbind();
 }

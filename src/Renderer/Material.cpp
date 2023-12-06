@@ -37,6 +37,16 @@ void Material::SetShader(const std::string& vspath, const std::string& fspath) {
     m_shader = new Shader(vspath, fspath);
 }
 
+void Material::SetCompShader(const std::string& path, unsigned int x, unsigned int y, unsigned int z) {
+    m_comp = new CompShader(path, x, y, z);
+}
+
+void Material::SetCompTex(const int width, const int height) {
+    m_compTexture = new Texture(width, height);
+}
+
+
+
 void Material::SetUniforms() {
     if (m_type == TPhong) {
         // set all light uniforms
@@ -58,6 +68,8 @@ void Material::Compile() {
     if (m_type == TPhong){
         m_buffer->Compile();
     }
+
+    m_comp->Compile();
 }
 
 void Material::Bind() {
@@ -67,6 +79,19 @@ void Material::Bind() {
         m_buffer->Bind();
     }
     SetUniforms();
+
+    // TODO comp rendering shouldnt be here
+    m_compTexture->Bind(0);
+    // m_comp->Execute();
+
+}
+
+void Material::Execute() {
+    // m_compTexture->Bind(0);
+    m_comp->Bind();
+    m_comp->Execute();
+    m_comp->Unbind();
+    // m_compTexture->Unbind();
 }
 
 void Material::Unbind() {
@@ -74,6 +99,9 @@ void Material::Unbind() {
     if (m_type == TPhong) {
         m_buffer->Unbind();
     }
+
+    // m_compTexture->Unbind();
+    // m_comp->Bind();
 }
 
 void Phong::SetUniforms(Shader* shad) {

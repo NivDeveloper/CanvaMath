@@ -31,3 +31,20 @@ private:
 	std::unordered_map<std::string, int> m_UniformLocationCache;
 	int GetUniformLocation(const std::string& name);
 };
+
+class CompShader {
+private:
+    unsigned int m_ID;
+    unsigned int m_X, m_Y, m_Z;
+    std::string m_CompSource;
+	std::unordered_map<std::string, int> m_UniformLocationCache;
+	int GetUniformLocation(const std::string& name){return 0;}
+public:
+    CompShader() {}
+    CompShader(const std::string& path, unsigned int x, unsigned int y, unsigned int z);
+    void Execute();
+    void Compile();
+    void Bind();
+    void Unbind();
+
+};

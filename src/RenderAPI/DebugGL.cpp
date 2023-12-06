@@ -62,5 +62,6 @@ void glDebugOutput( GLenum          source,
     }   std::cout << std::endl;
         std::cout << std::endl;
 
-    __debugbreak();
+    // __debugbreak();
+    __builtin_debugtrap();
 }
